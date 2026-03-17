@@ -1,4 +1,4 @@
-@import "tailwindcss" prefix(splash-);
+@import "tailwindcss" prefix(splash);
 @import "@statamic/cms/tailwind.css";
 
 @theme {
