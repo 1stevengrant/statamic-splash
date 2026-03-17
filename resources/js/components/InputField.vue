@@ -37,5 +37,6 @@
 <script>
 export default {
   props: ['value'],
+  emits: ['open', 'remove'],
 }
 </script>

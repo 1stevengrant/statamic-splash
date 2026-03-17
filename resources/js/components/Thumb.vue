@@ -29,6 +29,7 @@
 <script>
 export default {
   props: ['image', 'sizes'],
+  emits: ['open'],
 
   computed: {
     thumbUrl() {

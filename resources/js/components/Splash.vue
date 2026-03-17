@@ -12,8 +12,8 @@
 
     <stack
       name="unsplash-browser"
-      @closed="closeBrowser"
-      v-if="showBrowser"
+      v-model:open="showBrowser"
+      @closed="resetBrowser"
     >
       <div class="flex flex-col h-full bg-white">
 
@@ -92,9 +92,21 @@
 </template>
 
 <script>
+import { FieldtypeMixin as Fieldtype } from '@statamic/cms'
 import Thumb from './Thumb.vue'
 import InputField from './InputField.vue'
 import ImageViewer from './ImageViewer.vue'
+
+function throttle(fn, delay) {
+  let lastCall = 0
+  return function (...args) {
+    const now = Date.now()
+    if (now - lastCall >= delay) {
+      lastCall = now
+      fn.apply(this, args)
+    }
+  }
+}
 
 export default {
   mixins: [Fieldtype],
@@ -202,6 +214,8 @@ export default {
     },
     closeBrowser() {
       this.showBrowser = false
+    },
+    resetBrowser() {
       this.images = []
       this.searchQuery = ''
       this.searchPage = 1
@@ -215,13 +229,13 @@ export default {
       this.selectedImage = null
     },
     select() {
-      this.$emit('input', this.selectedImage)
+      this.update(this.selectedImage)
       this.pingUnsplash()
       this.closeBrowser()
     },
     removeImage() {
       this.selectedImage = null
-      this.$emit('input', null)
+      this.update(null)
     },
     setDefaultThumbSize() {
       if (this.config.thumb_size !== undefined) {
@@ -235,7 +249,7 @@ export default {
 
       if (! imageContainer) return
 
-      imageContainer.addEventListener('scroll', _.throttle(() => {
+      imageContainer.addEventListener('scroll', throttle(() => {
         if (this.loading) return
 
         const offset = 300
